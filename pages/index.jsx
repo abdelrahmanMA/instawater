@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import styles from '../styles/Home.module.css';
-import { getWeatherData } from '../services/openWeaterServices';
+import { getWeatherData } from '../services/openWeatherServices';
+import { reverseGeoCode } from '../services/googleMapsService';
 
 const toCelsius = (temp) => ((temp * 9) / 5 + 32).toFixed(2);
 const toFahrenheit = (temp) => (((temp - 32) * 5) / 9).toFixed(2);
@@ -58,6 +59,9 @@ export default function Home() {
       setSummary(data.weather[0]?.main);
       setDaySummary(data.weather[0]?.description);
       setIcon(data.weather[0]?.icon);
+    });
+    reverseGeoCode(latitude, longitude).then((addressFields) => {
+      setCity(addressFields.city);
     });
   }, [latitude, longitude]);
 
