@@ -42,18 +42,12 @@
   cursor: pointer;
 }
 
-.activeUnitSwitcher {
-  width: 76px;
-  height: 48px;
-  background: rgba(255, 255, 255, 0.25);
-  border-left: 2px solid #fff;
-}
-
 .weatherContentWrap {
   margin-block: auto;
   display: flex;
   justify-content: space-between;
 }
+
 .weatherContentWrap .leftSide,
 .weatherContentWrap .rightSide {
   display: flex;

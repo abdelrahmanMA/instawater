@@ -3,20 +3,38 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import { getWeatherData } from '../services/openWeaterServices';
 
+const toCelsius = (temp) => ((temp * 9) / 5 + 32).toFixed(2);
+const toFahrenheit = (temp) => (((temp - 32) * 5) / 9).toFixed(2);
+
 export default function Home() {
   const [activeUnit, setActiveUnit] = useState('c');
   const [latitude, setLatitude] = useState('29.9567842');
   const [longitude, setLongitude] = useState('31.0908323');
   const [temperature, setTemperature] = useState(72);
-  const [LowTemperature, setLowTemperature] = useState(63);
-  const [HighTemperature, setHighTemperature] = useState(81);
+  const [lowTemperature, setLowTemperature] = useState(63);
+  const [highTemperature, setHighTemperature] = useState(81);
   const [city, setCity] = useState('New Cairo');
   const [todaysDate, setTodaysDate] = useState('Monday 28, 2022');
-  const [icon, setIcon] = useState('partly-cloudy-day');
+  const [icon, setIcon] = useState('01d');
   const [summary, setSummary] = useState('cloudy');
   const [daySummary, setDaySummary] = useState('Cloudy throughout the day');
 
   const TemperatureSymbol = () => <sup>{activeUnit === 'c' ? '°' : '°F'}</sup>;
+
+  const convertTemperatureTo = (newUnit) => {
+    console.log('newUnit', newUnit);
+    if (newUnit === 'c' && activeUnit !== 'c') {
+      setTemperature(toCelsius(temperature));
+      setLowTemperature(toCelsius(lowTemperature));
+      setHighTemperature(toCelsius(highTemperature));
+      setActiveUnit('c');
+    } else if (newUnit === 'f' && activeUnit !== 'f') {
+      setTemperature(toFahrenheit(temperature));
+      setLowTemperature(toFahrenheit(lowTemperature));
+      setHighTemperature(toFahrenheit(highTemperature));
+      setActiveUnit('f');
+    }
+  };
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -39,6 +57,7 @@ export default function Home() {
       setHighTemperature(data.main.temp_max);
       setSummary(data.weather[0]?.main);
       setDaySummary(data.weather[0]?.description);
+      setIcon(data.weather[0]?.icon);
     });
   }, [latitude, longitude]);
 
@@ -52,8 +71,22 @@ export default function Home() {
         <header className={styles.header}>
           <h1>InstaWeather</h1>
           <div className={styles.unitSwitcherWrap}>
-            <button className={`${styles.unitSwitcher} ${activeUnit === 'c' && styles.activeUnitSwitcher}`}>C</button>
-            <button className={`${styles.unitSwitcher} ${activeUnit === 'f' && styles.activeUnitSwitcher}`}>F</button>
+            <button
+              className={`${styles.unitSwitcher} ${activeUnit === 'c' ? 'activeUnitSwitcher' : ''}`}
+              onClick={() => {
+                convertTemperatureTo('c');
+              }}
+            >
+              C
+            </button>
+            <button
+              className={`${styles.unitSwitcher} ${activeUnit === 'f' ? 'activeUnitSwitcher' : ''}`}
+              onClick={() => {
+                convertTemperatureTo('f');
+              }}
+            >
+              F
+            </button>
           </div>
         </header>
 
@@ -65,7 +98,7 @@ export default function Home() {
             </div>
             <div className={styles.iconAndSummary}>
               <span className={styles.icon}>
-                <img src={`https://darksky.net/images/weather-icons/${icon}.png`} alt={summary} />
+                <img src={`http://openweathermap.org/img/wn/${icon}@2x.png`} alt={summary} />
               </span>
               <span className={styles.summary}>{summary}</span>
             </div>
@@ -77,12 +110,12 @@ export default function Home() {
             </span>
             <span className={styles.temperatureRange}>
               <span>
-                {HighTemperature}
+                {highTemperature}
                 <TemperatureSymbol />
               </span>
               /
               <span>
-                {LowTemperature}
+                {lowTemperature}
                 <TemperatureSymbol />
               </span>
             </span>
