@@ -19,9 +19,12 @@ export default function Home() {
   const TemperatureSymbol = () => <sup>{activeUnit === 'c' ? '°' : '°F'}</sup>;
 
   useEffect(() => {
-    // if (navigator.geolocation) {
-    //   navigator.geolocation.getCurrentPosition((position) => {});
-    // }
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+      });
+    }
 
     const options = { weekday: 'long', year: 'numeric', day: 'numeric' };
     const date = new Date();
